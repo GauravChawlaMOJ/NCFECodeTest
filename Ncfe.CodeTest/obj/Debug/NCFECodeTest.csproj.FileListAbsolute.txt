@@ -1,6 +1,0 @@
-C:\Users\GauravChawla\Source\Repos\NCFECodeTest-new\Ncfe.CodeTest\bin\Debug\Ncfe.CodeTest.dll.config
-C:\Users\GauravChawla\Source\Repos\NCFECodeTest-new\Ncfe.CodeTest\bin\Debug\Ncfe.CodeTest.dll
-C:\Users\GauravChawla\Source\Repos\NCFECodeTest-new\Ncfe.CodeTest\bin\Debug\Ncfe.CodeTest.pdb
-C:\Users\GauravChawla\Source\Repos\NCFECodeTest-new\Ncfe.CodeTest\obj\Debug\NCFECodeTest.csproj.CoreCompileInputs.cache
-C:\Users\GauravChawla\Source\Repos\NCFECodeTest-new\Ncfe.CodeTest\obj\Debug\Ncfe.CodeTest.dll
-C:\Users\GauravChawla\Source\Repos\NCFECodeTest-new\Ncfe.CodeTest\obj\Debug\Ncfe.CodeTest.pdb
