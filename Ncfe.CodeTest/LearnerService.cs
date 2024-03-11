@@ -11,60 +11,44 @@ namespace Ncfe.CodeTest
     {
         public Learner GetLearner(int learnerId, bool isLearnerArchived)
         {
-            Learner archivedLearner = null;
+            var archivedDataService = new ArchivedDataService();
+            LearnerResponse learnerResponse = GetLearnerResponse(learnerId);
 
-            if (isLearnerArchived)
+            if (isLearnerArchived || learnerResponse.IsArchived)
             {
-                var archivedDataService = new ArchivedDataService();
-                archivedLearner = archivedDataService.GetArchivedLearner(learnerId);
+                return archivedDataService.GetArchivedLearner(learnerId);
+            }
+            return learnerResponse.Learner;
+        }
 
-                return archivedLearner;
+        private bool isFailOverModeEnabled()
+        {
+            var failoverRespository = new FailoverRepository();
+            var failoverEntries = failoverRespository.GetFailOverEntries();
+            var failedRequests = failoverEntries.FindAll(x => x.DateTime > DateTime.Now.AddMinutes(-10)).Count();
+            AppSettingsReader reader = new AppSettingsReader();
+            bool IsFailoverModeEnabled = (bool)reader.GetValue("IsFailoverModeEnabled", typeof(bool));
+            int MaxFailedRequests = (int)reader.GetValue("MaxFailedRequests", typeof(int));
+            if (IsFailoverModeEnabled && failedRequests > MaxFailedRequests)//100
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private LearnerResponse GetLearnerResponse(int learnerId)
+        {
+            LearnerResponse learnerResponse;
+            if (isFailOverModeEnabled())
+            {
+                learnerResponse = FailoverLearnerDataAccess.GetLearnerById(learnerId);
             }
             else
             {
-
-                var failoverRespository = new FailoverRepository();
-                var failoverEntries = failoverRespository.GetFailOverEntries();
-
-
-                var failedRequests = 0;
-
-                foreach (var failoverEntry in failoverEntries)
-                {
-                    if (failoverEntry.DateTime > DateTime.Now.AddMinutes(-10))
-                    {
-                        failedRequests++;
-                    }
-                }
-
-                LearnerResponse learnerResponse = null;
-                Learner learner = null;
-
-                if (failedRequests > 100 && (ConfigurationManager.AppSettings["IsFailoverModeEnabled"] == "true" || ConfigurationManager.AppSettings["IsFailoverModeEnabled"] == "True"))
-                {
-                    learnerResponse = FailoverLearnerDataAccess.GetLearnerById(learnerId);
-                }
-                else
-                {
-                    var dataAccess = new LearnerDataAccess();
-                    learnerResponse = dataAccess.LoadLearner(learnerId);
-
-
-                }
-
-                if (learnerResponse.IsArchived)
-                {
-                    var archivedDataService = new ArchivedDataService();
-                    learner = archivedDataService.GetArchivedLearner(learnerId);
-                }
-                else
-                {
-                    learner = learnerResponse.Learner;
-                }
-
-
-                return learner;
+                var dataAccess = new LearnerDataAccess();
+                learnerResponse = dataAccess.LoadLearner(learnerId);
             }
+            return learnerResponse;
         }
 
     }

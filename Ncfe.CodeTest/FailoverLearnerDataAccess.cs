@@ -5,7 +5,8 @@
         public static LearnerResponse GetLearnerById(int id)
         {
             // retrieve learner from database
-            return new LearnerResponse();
+            LearnerResponse learnerResponse = new LearnerResponse(id);
+            return learnerResponse;
         }
     }
 }
